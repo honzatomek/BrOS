@@ -21,12 +21,6 @@ It is structured as a numbered reading sequence so the architecture can be under
 13. roadmap and outlook
 14. frozen shared vocabulary
 
-A separate governance file remains standalone:
-
-- `ai_assistant_code_of_conduct.md`
-
-It is part of the project documentation set, but it is not merged into the architectural documents.
-
 ## 0.2 Reading Order
 
 ### Core conceptual path
@@ -77,4 +71,3 @@ It is part of the project documentation set, but it is not merged into the archi
 - `12_POSIX_COMPATIBILITY.md` — compatibility philosophy and limits
 - `13_ROADMAP_AND_OUTLOOK.md` — staged roadmap and VM/VPN/tensor outlook
 - `14_STATE_AND_EVENT_VOCABULARY.md` — frozen minimum shared vocabulary
-- `ai_assistant_code_of_conduct.md` — standalone governance document
