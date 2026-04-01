@@ -2,7 +2,7 @@
 
 **BrOS** is a broker-centric, modern-oriented operating system project.
 
-It is a hobby and learning project, but it is not meant to be architecturally casual. The project explores what an operating system could look like if it were built around explicit control, structured actions, first-class jobs, visible resources, and event-driven state, rather than treating processes, files, and syscalls as the only meaningful center of the machine.
+The project explores what an operating system could look like if it were built around explicit control, structured actions, first-class jobs, visible resources, and event-driven state, rather than treating processes, files, and syscalls as the only meaningful center of the machine.
 
 BrOS is designed around these core ideas:
 
