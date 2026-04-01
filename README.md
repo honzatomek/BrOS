@@ -1,66 +1,55 @@
 # BrOS
 
-**BrOS** is a broker-centric, modern-oriented operating system project.
+**BrOS** is a broker-centric, AI-native operating system architecture.
 
-The project explores what an operating system could look like if it were built around explicit control, structured actions, first-class jobs, visible resources, and event-driven state, rather than treating processes, files, and syscalls as the only meaningful center of the machine.
+It is designed around the idea that modern computing is no longer well described by processes, files, and syscalls alone. BrOS treats **objects, actions, jobs, resources, and events** as first-class architectural concepts. The kernel remains the execution substrate, but meaningful control is centered in a brokered control plane that makes system behavior explicit, inspectable, attributable, and safe to automate.
 
-BrOS is designed around these core ideas:
+BrOS is not a Unix replacement built by nostalgia, and it is not an operating system with AI pasted on top. It is an attempt to define an operating system whose core abstractions match modern use:
 
-- a **broker-centric control plane**
-- a **minimal kernel** that provides execution and isolation primitives rather than policy
-- **objects, actions, jobs, resources, and events** as the main conceptual model
-- **AI, Lua, CLI tools, and later Python** using the same action model
-- **native-first architecture**, with POSIX compatibility later
-- **inspectable and attributable behavior** rather than hidden control paths
+- structured orchestration rather than ad hoc automation
+- compute-aware job handling rather than process-only thinking
+- explicit resource visibility rather than hidden scheduler state
+- event-driven state transitions rather than implicit side effects
+- AI, Lua, CLI tools, and native apps operating through one action model
+- native-first architecture with POSIX compatibility later, not the reverse
 
-## Project status
+## Why BrOS exists
 
-BrOS is currently at the architecture and early project-shaping stage.
+Mainstream systems are still organized around abstractions that stabilized in a different era:
 
-There is not yet a completed implementation. The current work is focused on building a coherent conceptual foundation, preserving internal consistency across the documentation set, and preparing for the first real implementation slice.
+- processes as the main unit of work
+- files as the main unit of state
+- syscalls as the main control boundary
+- shells as the primary automation interface
 
-That first slice is intentionally strict:
+Those abstractions remain powerful, but they no longer capture the dominant realities of modern systems:
 
-**boot -> shell -> broker -> native `ls`**
+- heterogeneous compute
+- GPU and accelerator pressure
+- memory bandwidth contention
+- AI as planner and operator
+- background indexing, inference, rendering, simulation, and workflow jobs
+- the need for auditability, rollback, and attributable change
 
-This is the first milestone because it proves the architecture rather than merely accumulating features.
+BrOS responds by moving meaning upward into a coherent control plane.
 
-## Why this project exists
+## Core architectural shift
 
-Mainstream operating systems still carry assumptions from a world where the main abstractions were:
+Traditional systems are centered on:
 
 - processes
 - files
 - syscalls
-- shells
-
-Those abstractions remain powerful and worth preserving where they fit, but they do not fully describe how modern systems are used:
-
-- compute is heterogeneous
-- memory, bandwidth, and thermal constraints matter more
-- AI is becoming planner and operator, not only a tool inside one application
-- heavy work is often job-like, not just process-like
-- meaningful system actions increasingly need to be inspectable, attributable, and governable
-
-BrOS explores an operating system model where those realities are treated as first-class concerns from the beginning.
-
-## Core model
 
 BrOS is centered on:
 
-- **objects** as inspectable state
-- **actions** as explicit intent
+- **objects** as state
+- **actions** as intent
 - **jobs** as structured work
 - **resources** as allocatable and measurable capacity
 - **events** as observable state transition
 
-This means:
-
-- meaningful actions go through the broker
-- the kernel remains narrow in role
-- heavy work is modeled explicitly
-- resources are visible rather than hidden in scheduler internals
-- failure becomes state, not catastrophe
+This is the core model from which the rest of the system follows.
 
 ## Architecture at a glance
 
@@ -73,10 +62,10 @@ Orchestrators / Clients
 Action packets + capabilities
         ↓
 Broker
-(validation, routing, policy, logging, audit)
+(policy, validation, routing, logging, audit, job submission)
         ↓
 System services
-(objects, jobs, resources, storage, networking, device services)
+(objects, jobs, resources, storage, network, device services)
         ↓
 Kernel
 (memory, scheduling primitives, interrupts, isolation, syscalls)
@@ -100,167 +89,114 @@ Kernel
 
 ### Broker-centric control plane
 
-All meaningful actions go through the broker.
+All meaningful actions go through the broker. There are no parallel semantic control paths that bypass the system model.
 
 ### Minimal kernel philosophy
 
-The kernel is the execution plane, not the semantic center of the system.
+The kernel is the execution plane. It provides memory management, scheduling primitives, interrupts, isolation, and low-level mechanisms. It is not the place for policy, AI behavior, high-level job semantics, or application logic.
 
-### AI as orchestrator, not privileged exception
+### AI as orchestrator, not privileged actor
 
-AI is part of the architecture, but not above it.
+AI is a first-class orchestrator, but it is not above the architecture. It uses broker actions, runs under capabilities, and is fully logged.
 
 ### Jobs are first-class
 
-Heavy or resource-sensitive work should be modeled as jobs, not left implicit.
+Heavy or resource-sensitive work is expressed as jobs, not as raw processes with hidden meaning.
 
 ### Resources are explicit and queryable
 
-CPU, memory, GPU, power, thermal capacity, and similar system resources should be broker-visible.
+CPU, memory, GPU, power, thermal capacity, and related system resources are broker-visible objects with inspectable state.
 
 ### Events are universal
 
-Meaningful state changes should emit observable events.
+Meaningful state transitions emit events. Failure becomes state, not catastrophe.
 
-### Native first, POSIX later
+### Native first, POSIX second
 
-The native BrOS model defines the architectural truth. POSIX compatibility is important, but secondary.
+The native BrOS model defines the architectural truth. POSIX exists later as a compatibility layer, not as the core identity of the system.
 
-## Current implementation direction
+## What BrOS is trying to prove first
 
-The current direction is:
-
-- **Rust-first** for kernel and core system code
-- minimal assembly only where needed
-- native services above a deliberately small kernel
-- native tools as broker frontends
-- Lua first as built-in automation language
-- Python later as a peer orchestrator
-- versioned storage later in the stack
-- POSIX compatibility after the native architecture is established
-
-## Repository roadmap focus
-
-The project should advance in disciplined vertical slices.
-
-The first serious target is:
+The first true architectural milestone is deliberately strict:
 
 **boot -> shell -> broker -> native `ls`**
 
-That proves:
+This slice proves all of the following together:
 
-- kernel boot
-- userspace entry
-- init and shell
-- broker ingress and dispatch
-- object operations through the broker
-- native tools as thin broker frontends
-- inspectable logging of meaningful actions
+- the kernel can boot and host userspace
+- a minimal `init` and shell exist
+- the broker exists as a real control plane
+- object operations happen through the broker
+- native tools are thin broker frontends
+- broker actions are inspectable and logged
 
-## Licensing approach
+That milestone matters more than feature count because it proves the architecture is real.
 
-BrOS is intended to begin with a **simple, contributor-friendly copyleft model**.
+## Planned implementation direction
 
-### Code
+The current project direction is:
 
-The project codebase is intended to use the **Mozilla Public License 2.0 (MPL-2.0)**.
+- **Rust-first** for kernel and core system components
+- minimal assembly only where required
+- native services above a deliberately small kernel
+- native tools as broker frontends
+- Lua first as embedded automation language
+- Python later as a peer orchestrator
+- versioned storage and durable records later in the stack
+- POSIX compatibility after the native architecture is established
 
-This is the current preferred starting point because it strikes a practical balance:
+## License model
 
-- the repository remains public and forkable
-- contributions remain welcome
-- modifications to MPL-covered files remain open when distributed
-- the project does not start with unnecessarily heavy legal friction
+BrOS uses a split license model.
 
-This fits the current nature of BrOS well:
+### Core
 
-- a public learning project
-- open to outside contributions
-- interested in reciprocity rather than lock-down
-- cautious about letting improvements to the shared code disappear permanently into closed downstream changes
+The architectural and implementation core of BrOS is intended to use the **Mozilla Public License 2.0 (MPL-2.0)**.
 
-### Contributions
+This is the part of the project where file-level copyleft is useful because it encourages contribution-back on modifications to the core while remaining practical for broader integration.
 
-BrOS is intended to use a **Developer Certificate of Origin (DCO)** workflow rather than a CLA at the start.
+Examples of what belongs to the core include:
 
-This keeps contributions lighter-weight and closer to the style used by many engineering-driven open projects.
+- kernel
+- broker
+- core services
+- native system interfaces
+- canonical architecture-defining components
 
-See:
+### Non-core / surrounding project material
 
-- `CONTRIBUTING.md`
-- `DCO.md`
+The remainder of the repository is intended to use the **Apache License 2.0**.
 
-### Branding and identity
+This is the more permissive layer intended for surrounding materials and supporting project assets where broad reuse is useful.
 
-The code license is not the same thing as project naming or trademark policy.
+Examples may include:
 
-BrOS may later add a separate naming or trademark policy if the project becomes established enough for that to matter. That can be done without changing the basic contribution model.
+- documentation outside the architectural core
+- examples and demos
+- auxiliary tooling
+- supporting scripts
+- development helpers
+- non-core utilities
 
-## Installation and early run outline
+### Important note
 
-BrOS is still early, so the exact commands will evolve as implementation becomes real. For now, the setup path should stay simple and explicit.
+This README describes the intended repository license split. The repository should also contain the corresponding license files and a clear directory-level or file-level mapping once the codebase structure is finalized.
 
-### 1. Clone the repository
+A practical repository layout would typically include at least:
 
-```bash
-git clone <repository-url>
-cd <repository-directory>
-```
+- `LICENSES/MPL-2.0.txt`
+- `LICENSES/Apache-2.0.txt`
+- a top-level note explaining which directories are governed by which license
 
-### 2. Install expected host tools
+## Repository layout
 
-The likely early host requirements are:
-
-- Rust toolchain (`rustup`, `cargo`)
-- QEMU, likely `qemu-system-x86_64`
-- `make` or another agreed task runner
-- target-specific binutils or LLVM tools as needed
-- packages required for boot image creation
-
-A typical Linux-host setup will therefore start with:
-
-- Rust
-- QEMU
-- basic build tooling
-
-### 3. Build the current target
-
-A likely early flow will look something like:
-
-```bash
-make build
-```
-
-or:
-
-```bash
-cargo build
-```
-
-The exact command should eventually be stabilized and documented in the repo root.
-
-### 4. Run under QEMU
-
-A likely early run flow will look something like:
-
-```bash
-make run
-```
-
-or an equivalent scripted QEMU entry point.
-
-The goal is to keep the project runnable with one clear command once the first bootable slice exists.
-
-## Expected repository shape
-
-A likely early structure is:
+A likely early repository shape is:
 
 ```text
 .
 ├── README.md
 ├── CONTRIBUTING.md
-├── DCO.md
-├── LICENSE
+├── LICENSES/
 ├── docs/
 │   └── canonical/
 ├── kernel/
@@ -273,38 +209,123 @@ A likely early structure is:
 └── experiments/
 ```
 
-This may evolve, but the architectural separation should remain visible in the repository structure.
+This exact structure may evolve, but the separation should remain clear enough to preserve the architectural boundaries and the license split.
 
-## How to contribute
+## Installation and first run
 
-If you want to contribute, start with:
+BrOS is still an early architecture project. The installation path will evolve as the first bootable slices become real. For now, the expected setup flow should remain simple and reproducible.
 
-1. reading the canonical docs
-2. understanding the broker-centric model
-3. checking the first vertical slice
-4. keeping proposals narrow and architecturally honest
+### 1. Clone the repository
 
-Please read `CONTRIBUTING.md` before opening larger architectural proposals.
+```bash
+git clone <repository-url>
+cd <repository-directory>
+```
 
-## Canonical documentation
+### 2. Install the expected host tooling
 
-The canonical documentation set defines the architecture in full and should be treated as the current source of design truth.
+The exact dependencies will depend on the current stage of implementation, but the general build and test environment will likely include:
 
-Suggested reading order:
+- Rust toolchain (`rustup`, `cargo`)
+- `qemu-system-x86_64` or another agreed target emulator
+- `make` or an equivalent task runner
+- `llvm-tools` or target-specific binutils as needed
+- platform packages required for boot image creation
 
-1. `README.md`
-2. `docs/canonical/01_VISION_AND_MISSION.md`
-3. `docs/canonical/02_FOUNDATION.md`
-4. `docs/canonical/05_BROKER_AND_CONTROL_PLANE.md`
-5. `docs/canonical/06_CORE_MODELS.md`
-6. `docs/canonical/07_TRIGGERS_FLOWS_INVARIANTS_AND_SCENARIOS.md`
-7. `docs/canonical/08_FIRST_VERTICAL_SLICE.md`
-8. `docs/canonical/09_DEVELOPER_GUIDE.md`
-9. `docs/canonical/13_ROADMAP_AND_OUTLOOK.md`
-10. `docs/canonical/14_STATE_AND_EVENT_VOCABULARY.md`
+On a typical Linux host, that means installing the Rust toolchain and QEMU first, then any target-specific build helpers used by the repository.
 
-## Current intent
+### 3. Build the current target
 
-BrOS starts as a public hobby and learning project.
+A typical early flow should look something like:
 
-But it is also being documented in a way that keeps the long-term groundwork sane if it grows into something more serious. That means trying to make good architectural and governance choices early, without suffocating the project under unnecessary complexity before the first line of real implementation lands.
+```bash
+make build
+```
+
+or:
+
+```bash
+cargo build
+```
+
+The project should prefer one obvious entry point rather than many competing ways to produce a bootable image.
+
+### 4. Run BrOS in QEMU
+
+A typical early flow should look something like:
+
+```bash
+make run
+```
+
+or, if the project later exposes explicit runner commands:
+
+```bash
+qemu-system-x86_64 <machine-and-image-arguments>
+```
+
+The preferred goal is a one-command developer path that boots directly into the current milestone target.
+
+### 5. Expected early outcome
+
+The earliest meaningful success line is not a full desktop environment. It is much smaller and more important:
+
+- kernel boots
+- serial logging works
+- `init` starts
+- shell starts
+- shell can call the broker
+- broker can answer `ping`
+- native `ls` can list objects through broker
+
+That is the first point where the architecture becomes real.
+
+## Documentation map
+
+The canonical project documentation should be read in this order:
+
+1. `01_VISION_AND_MISSION.md`
+2. `02_FOUNDATION.md`
+3. `03_DETAILED_REFERENCE.md`
+4. `04_KERNEL_AND_SYSTEM_ARCHITECTURE.md`
+5. `05_BROKER_AND_CONTROL_PLANE.md`
+6. `06_CORE_MODELS.md`
+7. `07_TRIGGERS_FLOWS_INVARIANTS_AND_SCENARIOS.md`
+8. `08_FIRST_VERTICAL_SLICE.md`
+9. `09_DEVELOPER_GUIDE.md`
+10. `10_NATIVE_APPLICATIONS.md`
+11. `11_STORAGE_VERSIONING_AND_HISTORY.md`
+12. `12_POSIX_COMPATIBILITY.md`
+13. `13_ROADMAP_AND_OUTLOOK.md`
+14. `14_STATE_AND_EVENT_VOCABULARY.md`
+15. `ai_assistant_code_of_conduct.md` (standalone governance document)
+
+## Contribution posture
+
+BrOS should be developed with architectural discipline.
+
+That means:
+
+- no direct kernel-bypass control paths
+- no POSIX-first design drift
+- no ad hoc APIs outside the broker model
+- no accidental collapse of jobs back into mere process language
+- no hidden scheduler-only truth for allocatable resources
+- no feature expansion that breaks the first-slice architectural proof
+
+Contributors should prefer end-to-end vertical slices and explicit invariants over broad speculative subsystem sprawl.
+
+Please see `CONTRIBUTING.md` for contribution guidelines.
+
+## Status
+
+BrOS is currently in the architecture-definition and early implementation-planning stage.
+
+The current priority is not breadth.
+It is architectural honesty.
+
+The project should first prove:
+
+**boot -> shell -> broker -> native `ls`**
+
+Everything else should grow from that without violating the model.

@@ -1,27 +1,23 @@
 # Contributing to BrOS
 
-Thank you for your interest in BrOS.
+Thank you for contributing to BrOS.
 
-BrOS is a public hobby and learning project, but it is not intended to be an unstructured playground. It has a defined architectural center, a canonical documentation set, and a deliberate implementation direction. Contributions are welcome, but they should preserve that shape rather than blur it.
-
-## 1. What BrOS is trying to build
-
-BrOS is built around these architectural commitments:
+BrOS is not a conventional operating system project with a generic pile of subsystems waiting to be filled in. It is an architecture-driven project with a specific conceptual center:
 
 - broker-centric control plane
 - minimal kernel philosophy
 - objects, actions, jobs, resources, and events as the core model
 - native-first design
-- AI, Lua, CLI tools, and later Python using one action model
+- AI, Lua, CLI, and later Python using one action model
 - POSIX as compatibility, not architectural truth
 
-If a contribution works against those commitments, it is not aligned with the project.
+Contributions are welcome, but they must preserve that architecture.
 
-## 2. Before contributing
+## 1. Before you contribute
 
-Please read the canonical documents first.
+Please read the canonical documentation before proposing structural changes.
 
-Suggested reading order:
+Recommended reading order:
 
 1. `README.md`
 2. `docs/canonical/01_VISION_AND_MISSION.md`
@@ -34,274 +30,263 @@ Suggested reading order:
 9. `docs/canonical/13_ROADMAP_AND_OUTLOOK.md`
 10. `docs/canonical/14_STATE_AND_EVENT_VOCABULARY.md`
 
-For nontrivial changes, assume the canonical docs are binding unless they are being explicitly updated by the same contribution.
+If your proposed change conflicts with those documents, the change is not ready.
 
-## 3. Current contribution priorities
+## 2. Contribution priorities
 
-At this stage, the most valuable work is work that proves the architecture in disciplined vertical slices.
+The project should progress in a disciplined order.
 
-The current practical focus is around the first true milestone:
-
-**boot -> shell -> broker -> native `ls`**
-
-That means contributions are especially welcome in areas such as:
+Current high-priority contribution areas are expected to be:
 
 - bootable kernel substrate
-- userspace entry
-- `init`
+- userspace entry and `init`
 - minimal shell
 - broker v0
 - simple object backend
-- broker-backed `ls`
-- request logging and inspectability
+- broker-backed native `ls`
+- logging and inspectability for the first slice
 - architecture-preserving stubs for `job.plan` and `resource.query`
-- documentation corrections that improve consistency and reduce ambiguity
 
-## 4. What a good contribution looks like
+Contributions that help prove the first vertical slice are usually better than ambitious subsystem expansions.
 
-A good BrOS contribution usually does one or more of the following:
+## 3. What a good contribution looks like
 
-- strengthens the broker-centric design
-- preserves or clarifies a documented invariant
-- advances a real vertical slice
-- reduces ambiguity in architecture or vocabulary
+A good BrOS contribution does at least one of these well:
+
+- strengthens the broker-centric architecture
+- preserves or clarifies a system invariant
+- implements an end-to-end vertical slice
+- reduces ambiguity in the canonical model
 - improves inspectability, logging, or attributable behavior
-- implements something small but structurally honest
+- moves the project toward the first real milestone without hardening the wrong abstractions
 
-Examples:
+Examples of good contribution shape:
 
-- a minimal broker request envelope with clean result and error shapes
+- a minimal broker request envelope with clean logging
 - a thin broker-backed native tool
-- a kernel change necessary for the first userspace slice
-- a logging path that makes broker actions inspectable
-- a documentation patch that resolves a real contradiction between documents
+- a structured object action with clear error classes
+- a small kernel improvement required to host the first userspace slice
+- a documentation correction that resolves a real inconsistency
 
-## 5. What to avoid
+## 4. What not to contribute
 
-Some kinds of contributions are actively unhelpful at this stage.
+Some kinds of contributions are actively harmful at this stage.
 
-Please avoid proposing or implementing:
+Do not propose or implement:
 
-- direct kernel bypass for meaningful control operations
+- direct kernel bypasses for meaningful control operations
 - ad hoc side APIs that duplicate broker semantics
-- POSIX-first redesigns that move BrOS back toward being a Unix clone
-- hidden scheduler or resource truth that cannot be queried through the system model
-- private semantics inside native tools that should live in broker/services
-- feature sprawl that skips architectural proof
+- POSIX-first architecture that redefines the project around Unix compatibility
+- process-only language where the model requires jobs
+- hidden resource allocation truth that cannot be queried through the broker-visible model
+- feature-heavy additions that skip the first-slice proof
 - speculative infrastructure that freezes the wrong abstractions too early
 
-In short:
+In practical terms:
 
-- do not bypass the broker for meaningful actions
-- do not put policy into the kernel for convenience
-- do not let compatibility layers become the architectural center
-- do not collapse the broader model back into only files and processes
+- do not make native tools implement private semantics that belong in broker/services
+- do not turn the broker into a filesystem-only API by neglecting reserved job/resource namespace continuity
+- do not place policy and semantic behavior into the kernel because it feels expedient
+- do not let compatibility layers dictate the native model
 
-## 6. Architectural guardrails
+## 5. Architectural guardrails
 
-Every serious contribution should be checked against these guardrails.
+Every nontrivial contribution should be checked against these guardrails.
 
-### Broker mediates meaningful actions
+### 5.1 Broker mediates all meaningful actions
 
-If a change introduces meaningful system behavior, ask whether it should be represented through the broker.
+If a change introduces a meaningful system action, ask whether that action belongs behind the broker.
 
-### Kernel stays minimal
+### 5.2 Kernel remains minimal
 
-The kernel is the execution substrate, not the place for high-level policy, AI semantics, or architectural drift.
+The kernel is the execution substrate, not the policy engine and not the semantic center.
 
-### Jobs remain first-class
+### 5.3 Jobs are first-class
 
-Heavy work and resource-sensitive work should preserve the job model.
+Heavy work and resource-sensitive execution should be expressed in a way that keeps the job model intact.
 
-### Resources stay explicit and queryable
+### 5.4 Resources must be explicit and queryable
 
-Allocatable system capacity should not disappear into opaque implementation details.
+Do not hide allocatable system capacity inside uninspectable scheduler internals.
 
-### Events remain first-class
+### 5.5 Events are universal
 
-Meaningful state transitions should be observable.
+Meaningful state transitions should produce explicit observable state, not only silent side effects.
 
-### Native-first remains true
+### 5.6 Native-first remains true
 
-POSIX support matters later, but should not redefine the system’s core truth.
+POSIX support matters later, but it must not redefine the architectural center.
 
-## 7. Development style
+## 6. Preferred development style
 
-BrOS should be developed by **small, coherent, inspectable slices**.
+BrOS should be developed by vertical proof, not by broad speculative sprawl.
 
 Prefer:
 
-- narrow patches
-- explicit naming
-- stable vocabulary
-- structured result and error shapes
-- implementation that follows the docs
-- changes that preserve clean architectural boundaries
+- small, complete, inspectable slices
+- minimal interfaces with clean future continuity
+- explicit error/result shapes
+- clear naming and stable vocabulary
+- implementation that follows the documentation exactly
+- mechanical consistency across docs, code, logs, and tool behavior
 
 Avoid:
 
 - hidden behavior
-- giant speculative rewrites
-- unrelated formatting churn
-- premature framework-building
-- temporary shortcuts that quietly redefine the system
+- premature generalization
+- framework-heavy overengineering
+- giant refactors with no architectural proof
+- “temporary” shortcuts that redefine the architecture by accident
 
-## 8. Documentation expectations
+## 7. Documentation requirements
 
-Documentation is part of the architecture.
+Documentation is not optional support material in BrOS. It is part of the architecture.
 
-If your change affects any of the following, update the relevant canonical docs in the same contribution:
+If you change:
 
 - terminology
 - action names
-- lifecycle states
 - model boundaries
+- lifecycle states
 - invariants
-- vertical-slice scope
+- first-slice scope
 - roadmap meaningfully
 
-Likely affected documents include:
+then update the relevant canonical documents in the same change set.
 
-- foundation
-- broker/control plane
+At minimum, check whether your contribution affects:
+
+- `FOUNDATION`
+- broker/control plane docs
 - core models
 - triggers/flows/invariants/scenarios
 - state and event vocabulary
 - developer guide
 - roadmap
 
-Implementation and docs should not drift apart.
+Documentation and implementation must not drift apart.
 
-## 9. Vocabulary discipline
+## 8. Naming and vocabulary discipline
 
-BrOS relies on stable terms.
+BrOS depends on stable vocabulary.
 
 When contributing:
 
-- use existing canonical vocabulary where it exists
-- prefer extending vocabulary files over inventing synonyms
-- keep job/resource/event terminology consistent
-- do not casually replace job language with process language
-- do not reduce objects to “just files” when the model is broader
+- use existing canonical terms where they already exist
+- prefer extending vocabulary files rather than inventing synonyms
+- keep job states, event names, and resource terms consistent
+- do not casually substitute process language for job language
+- do not collapse objects into “just files” when the model is broader
 
-If new vocabulary is truly needed, justify it and place it in the correct canonical document.
+If new vocabulary is truly necessary, justify it and place it into the appropriate canonical document.
 
-## 10. Proposing larger changes
+## 9. Proposing larger changes
 
-For larger architectural changes, start with a written proposal before writing code.
+For larger architectural changes, start with a written proposal before implementation.
 
-A good proposal should explain:
+A strong proposal should state:
 
 - the problem being solved
-- why the current architecture or documents are insufficient
-- the exact change being proposed
-- what documents and subsystems are affected
-- why the change still aligns with the broker-centric model
-- what complexity it introduces or removes
+- which current document or invariant is insufficient
+- what exact change is proposed
+- what files and subsystems are affected
+- why the change does not violate the broker-centric architecture
+- what future complexity is avoided or introduced
 
-Large rewrites without framing are hard to evaluate and usually harder to merge.
+Large unframed rewrites are much harder to review than disciplined, explicit proposals.
 
-## 11. Pull requests and patches
+## 10. Pull request guidance
 
-Good pull requests are easy to evaluate against the architecture.
+A pull request should be easy to evaluate against the architecture.
 
 Please include:
 
 - a clear statement of intent
-- affected subsystem(s)
-- whether the change is code, docs, or both
-- what milestone or slice it advances
+- the affected subsystem(s)
+- whether the change is architectural, implementation, documentation, or mixed
+- how the change aligns with the canonical docs
+- what milestone or vertical slice it advances
 - what remains intentionally out of scope
 
-Prefer focused patches. When practical, separate mechanical cleanup from semantic change.
+Useful pull requests are usually narrow enough that their architectural effect can be understood without guesswork.
+
+## 11. Commit and patch expectations
+
+Favorable contribution style:
+
+- keep patches focused
+- separate mechanical renames from semantic changes where practical
+- avoid unrelated formatting churn
+- preserve intent in diffs
+- make code structure reflect architectural boundaries
+
+When possible, one patch should do one coherent thing.
 
 ## 12. Testing posture
 
-Tests should reinforce the system model, not encourage shortcuts around it.
+Tests should prove architectural behavior, not merely satisfy superficial mechanics.
 
-Prefer tests that validate:
+Prefer tests that verify:
 
-- broker request and result behavior
-- explicit denial or success paths
+- broker request/response behavior
+- capability-aware denial or success paths
 - logging and inspectability
-- first-slice flow correctness
+- first-slice action flow
 - object action correctness
-- continuity of reserved job/resource namespace
-- event emission where applicable
+- stub continuity for future job/resource namespace
+- event emission where introduced
 
-## 13. Licensing model
+As the project grows, tests should reinforce the system model rather than encourage shortcuts around it.
 
-BrOS is currently intended to start with a **simple MPL-2.0 + DCO model**.
+## 13. Licensing expectations
 
-### Code license
+BrOS uses **MPL-2.0** as the project code license.
 
-Project code is intended to be licensed under **Mozilla Public License 2.0 (MPL-2.0)**.
+Contributors should preserve license headers and notices once the repository structure formalizes them.
 
-The reason for this choice is practical:
+If you add a new file, place it under the correct project area and ensure it inherits or declares the correct license according to repository policy.
 
-- the project remains public and forkable
-- contributions are encouraged
-- improvements to covered files remain open when distributed
-- the project does not start with heavier legal machinery than it needs
-
-### Contribution model
-
-BrOS is intended to use a **Developer Certificate of Origin (DCO)** rather than a CLA at the start.
-
-This means contributors sign off their commits to certify that they have the right to submit the work under the project license.
-
-See `DCO.md` for the full text.
-
-In practice, sign-off typically means adding this line to a commit:
-
-```text
-Signed-off-by: Your Name <you@example.com>
-```
-
-A typical workflow is:
-
-```bash
-git commit -s
-```
-
-The `-s` adds the sign-off line automatically.
-
-### AI-assisted contributions
+## 14. AI-assisted contributions
 
 AI-assisted contributions are allowed.
 
-However, the DCO sign-off must always be made by a human contributor, not by an AI assistant or automated tool.
+However:
 
-By signing off, the human contributor confirms that they:
+- only a human contributor may sign off under the DCO
+- the human signer must review the entire contribution
+- the human signer must have the right to submit all included material under the project license
+- unclear provenance may be rejected during review
 
-- reviewed the entire contribution
-- take responsibility for the submitted patch
-- have the right to submit all included material under the project license
-- did not knowingly include material with unclear or incompatible provenance
+Using an AI assistant does not shift responsibility away from the human contributor.
 
-Contributions with unclear provenance may be rejected.
-
-## 14. Governance and code of conduct
+## 15. Code of conduct and governance
 
 The file `ai_assistant_code_of_conduct.md` is a standalone governance document.
 
-It may be referenced where relevant, but it should remain separate from the main architecture docs.
+It may be referenced where relevant, but it should remain structurally separate and should not be merged into the architectural documentation.
 
-## 15. Maintainer review and project direction
+## 16. The current standard of success
 
-BrOS is open to contributions, but project direction remains curated.
+At this stage, the best contribution is usually not the most ambitious one.
 
-Being public and forkable does not mean every contribution will be merged. The maintainer may decline changes that:
+The project’s current standard of success is still:
 
-- conflict with the broker-centric architecture
-- introduce the wrong abstractions too early
-- create drift against the canonical docs
-- trade architectural honesty for convenience
+**boot -> shell -> broker -> native `ls`**
 
-That is not meant to discourage contribution. It is meant to keep the project coherent.
+That milestone proves:
 
-## 16. What success looks like right now
+- kernel substrate
+- userspace viability
+- broker centrality
+- object access through broker
+- native tool shape
+- logging foundation
+- architectural honesty
 
-At this stage, the best contribution is usually not the biggest one.
+Contribute in a way that helps the project cross that line cleanly.
 
-The best contribution is one that makes BrOS more real without making it less itself.
+## 17. Final rule
+
+If a contribution makes BrOS easier to build but less faithful to its architecture, it is not a good contribution.
+
+Protect the model first.
